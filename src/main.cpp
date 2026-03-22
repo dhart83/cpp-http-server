@@ -67,6 +67,16 @@ int main() {
 
     std::cout << read_buffer.data() << std::endl;
 
+       // Write response
+    const char* response =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 12\r\n"
+        "\r\n"
+        "Hello World\n";
+
+    write(client_fd, response, 77);
+
     // Close sockets
     close(client_fd);
     close(socket_fd);
