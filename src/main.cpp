@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <array>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -53,6 +54,18 @@ int main() {
     }
 
     std::cout << "client connected, fd = " << client_fd << std::endl;
+
+    std::array<char, 1024> read_buffer {};
+
+    // Read raw bytes into buffer
+    if (read(client_fd, read_buffer.data(), read_buffer.size()) == -1) {
+        std::perror("read");
+        close(client_fd);
+        close(socket_fd);
+        return 1;
+    }
+
+    std::cout << read_buffer.data() << std::endl;
 
     // Close sockets
     close(client_fd);
