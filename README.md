@@ -25,9 +25,12 @@ The current implementation baseline can:
 - bind to a local port
 - listen for incoming connections
 - accept a client connection
-- close the connection cleanly
+- read an incoming client request
+- return a hardcoded HTTP/1.1 response
+- close the client connection cleanly
 
-At this stage, the server does not yet parse HTTP requests or return an HTTP response.
+At this stage, the server does not yet fully parse HTTP requests or implement routing. It returns a fixed response for basic end-to-end verification.
+The request is printed to terminal on the server side and a response is present on the client side terminal.
 
 ## Scope
 
@@ -118,13 +121,87 @@ Start the server:
 ./build/cpp_http_server
 ```
 
-Then, from another terminal, test it with `netcat`:
+Then, from another terminal, connect with `curl` or `netcat` to verify that the server accepts a connection and returns a hardcoded HTTP response.
+
+Using `curl`:
 
 ```bash
-nc 127.0.0.1 8080
+curl http://127.0.0.1:56789/
+```
+
+Using `netcat`:
+
+```bash
+nc 127.0.0.1 56789
 ```
 
 At the current stage, this is mainly useful for confirming that the server accepts a TCP connection.
+
+## Manual Verification
+
+This section describes how to manually verify the first working server milestone.
+
+### 1. Build the project
+
+From the repository root:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+```
+
+### 2. Start the Server
+
+```bash
+./build/cpp_http_server
+```
+
+The server should start listening on `127.0.0.1:56789`.
+
+### 3. Test with `curl`
+
+In a second terminal, run:
+
+```bash
+curl -v http://127.0.0.1:56789/
+```
+
+Expected behavior:
+
+- the client connects successfully
+- the server returns an HTTP response
+- the response body contains the current hardcoded content
+- the connection is closed after the response is sent
+
+### 4. Test with `netcat`
+
+In a second terminal, run:
+
+```bash
+nc 127.0.0.1 56789
+```
+
+Then type a minimal HTTP request:
+
+```bash
+GET / HTTP/1.1
+Host: 127.0.0.1
+
+```
+
+After the blank line, the server should return the hardcoded HTTP response and then close the connection.
+
+### Expected Successful Behavior
+
+A successful test means:
+
+- the project builds without errors
+- the server starts without crashing
+- a client can connect on 127.0.0.1:56789
+- the server reads the incoming request data
+- the server sends back a valid hardcoded HTTP response
+- the client receives the response
+- the server closes the connection cleanly after responding
 
 ## Repository Structure
 

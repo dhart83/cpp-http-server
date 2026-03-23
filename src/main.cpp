@@ -17,6 +17,13 @@ int main() {
         return 1;
     }
 
+    int opt = 1;
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+        std::perror("setsockopt");
+        close(socket_fd);
+        return 1;
+    }
+
     std::cout << "socket created, fd = " << socket_fd << std::endl;
 
     // Bind the TCP socket
